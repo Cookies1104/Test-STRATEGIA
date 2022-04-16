@@ -6,10 +6,18 @@ from .models import Article, Comment
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ('id', 'name', 'description', 'create_date', 'update_date', )
+        fields = ('id', 'name', 'description', )
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'article', 'parent', 'create_date', 'update_date', )
+        fields = ('id', 'text', 'article', 'level', 'parent', )
+        read_only_fields = ('level', 'parent', )
+
+
+class ReplyToCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'parent', 'article', 'level', )
+        read_only_fields = ['article', ]

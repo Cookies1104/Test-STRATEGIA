@@ -23,13 +23,15 @@ class Comment(models.Model):
     update_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     parent = models.ForeignKey('self',
                                on_delete=models.CASCADE,
+                               default=None,
                                null=True,
                                blank=True,
                                related_name='parent_%(class)s',
                                verbose_name='parent comment')
+    level = models.IntegerField(default=1, blank=True)
 
     def __str__(self):
-        return f'Комментарий {self.text} к статье {self.article}'
+        return f'Комментарий {self.text}, уровня {self.level} к статье {self.article}'
 
     class Meta:
         verbose_name = 'Комментарий'
