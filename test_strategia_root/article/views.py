@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,6 +25,10 @@ class ReadCommentAPI(generics.ListAPIView):
 
 class ReadCommentForArticleAPI(APIView):
     """Отображение комментариев до 3 уровня к конкретной статье"""
+    @extend_schema(
+        request=CommentSerializer,
+        responses=CommentSerializer(many=True, ),
+    )
     def get(self, request, *args, **kwargs):
         pk = kwargs.get('article_id')
         check = checking_primary_key(model=Article, pk=pk)
@@ -36,10 +41,10 @@ class ReadCommentForArticleAPI(APIView):
 
 class CreateCommentForArticleAPI(APIView):
     """Создание комментария к конкретной статье"""
-    def get(self, request):
-        comment = Comment.objects.all()[:1]
-        return Response({'comments': CommentSerializer(comment, many=True).data})
-
+    @extend_schema(
+        request=CommentSerializer,
+        responses=CommentSerializer
+    )
     def post(self, request):
         serialazer = CommentSerializer(data=request.data)
         serialazer.is_valid(raise_exception=True)
@@ -52,10 +57,10 @@ class CreateCommentForArticleAPI(APIView):
 
 class CreateReplyToCommentAPI(APIView):
     """Создание комментария в ответ к другому комментарию"""
-    def get(self, request):
-        comment = Comment.objects.filter(parent=not None)[:1]
-        return Response({'comments': ReplyToCommentSerializer(comment, many=True).data})
-
+    @extend_schema(
+        request=ReplyToCommentSerializer,
+        responses=CommentSerializer,
+    )
     def post(self, request):
         serializer = ReplyToCommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -72,6 +77,7 @@ class CreateReplyToCommentAPI(APIView):
             return Response({'comments': {'parent': 'обязательное поле'}})
 
 
+@extend_schema(responses=CommentSerializer(many=True))
 class ReadCommentLevelThreeAPI(APIView):
     """Отображение всех ответов к комментарию 3 уровня"""
     def get(self, request, **kwargs):

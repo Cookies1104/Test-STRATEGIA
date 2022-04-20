@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from .models import Article, Comment
@@ -16,6 +17,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('level', 'parent', )
 
 
+@extend_schema_serializer(exclude_fields=['level', ])
 class ReplyToCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
