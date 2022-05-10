@@ -38,10 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
-    'article.apps.ArticleConfig',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+
+    'article.apps.ArticleConfig',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +146,5 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
 }
+
+AUTH_USER_MODEL = 'users.User'
