@@ -11,6 +11,9 @@ class Article(models.Model):
     def __str__(self):
         return self.name
 
+    def get_article_name(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
@@ -32,6 +35,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Комментарий {self.text}, уровня {self.level} к статье {self.article}'
+
+    def get_parent_comment(self):
+        return self.parent.text
+
+    def get_article(self):
+        return self.article.name
+
+    def get_level_comment(self):
+        return self.level
 
     class Meta:
         verbose_name = 'Комментарий'

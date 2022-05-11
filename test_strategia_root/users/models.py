@@ -10,30 +10,38 @@ from django.contrib.auth.models import (
 # Create your models here.
 class UserManager(BaseUserManager):
     """Получаем из BaseUserManager много стандартного кода для создания user"""
-    def create_user(self, username, email, password=None):
-        """Создание обычного пользователя"""
-        if username is None:
-            raise TypeError('Users must have a username.')
-        if email is None:
-            raise TypeError('Users must have an email address.')
+    def _create_user(self, username, email, password=None, **kwargs):
+        if not username:
+            raise ValueError('Указанное имя пользователя должно быть установлено')
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        if not email:
+            raise ValueError('Данный адрес электронной почты должен быть установлен')
+
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **kwargs)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, username, email, password):
+    def create_user(self, username, email, password=None, **kwargs):
+        """Создание обычного пользователя"""
+        kwargs.setdefault('is_staff', False)
+        kwargs.setdefault('is_superuser', False)
+        return self._create_user(username, email, password, **kwargs)
+
+    def create_superuser(self, username, email, password, **kwargs):
         """Создание суперпользователя"""
-        if password is None:
-            raise TypeError('Superusers must have a password.')
+        kwargs.setdefault('is_staff', True)
+        kwargs.setdefault('is_superuser', True)
 
-        user = self.create_user(username, email, password)
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
+        if kwargs.get('is_staff') is not True:
+            raise ValueError('Суперпользователь должен иметь is_staff=True.')
 
-        return user
+        if kwargs.get('is_superuser') is not True:
+            raise ValueError('Суперпользователь должен иметь is_superuser=True.')
+
+        return self._create_user(username, email, password, **kwargs)
 
 
 class User(AbstractUser, PermissionsMixin):
