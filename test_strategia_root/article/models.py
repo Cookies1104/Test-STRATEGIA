@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 # Create your models here.
@@ -7,6 +8,7 @@ class Article(models.Model):
     description = models.TextField(blank=True)
     create_date = models.DateTimeField(auto_now_add=True, blank=True)
     update_date = models.DateTimeField(auto_now=True, blank=True, null=True)
+    # author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, )
 
     def __str__(self):
         return self.name
@@ -32,6 +34,7 @@ class Comment(models.Model):
                                related_name='parent_%(class)s',
                                verbose_name='parent comment')
     level = models.IntegerField(default=1, blank=True)
+    # author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, )
 
     def __str__(self):
         return f'Комментарий {self.text}, уровня {self.level} к статье {self.article}'

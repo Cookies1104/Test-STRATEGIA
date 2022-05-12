@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import (
-    AbstractUser, BaseUserManager, PermissionsMixin
+    AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 
 
 # Create your models here.
-class UserManager(BaseUserManager):
+class MyUserManager(BaseUserManager):
     """Получаем из BaseUserManager много стандартного кода для создания user"""
     def _create_user(self, username, email, password=None, **kwargs):
         if not username:
@@ -44,7 +44,7 @@ class UserManager(BaseUserManager):
         return self._create_user(username, email, password, **kwargs)
 
 
-class User(AbstractUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     """"""
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True)
@@ -56,7 +56,7 @@ class User(AbstractUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    objects = UserManager()
+    objects = MyUserManager()
 
     def __str__(self):
         """ Строковое представление модели (отображается в консоли) """
