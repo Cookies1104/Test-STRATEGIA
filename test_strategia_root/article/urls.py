@@ -9,7 +9,7 @@ from article.views import (ArticleReadCreateAPI,
                            )
 
 urlpatterns = [
-    path('article/', ArticleReadCreateAPI.as_view()),
+    path('article/', ArticleReadCreateAPI.as_view(), name='article-list'),
     path('comments/', ReadCommentAPI.as_view()),
     path('article/<int:article_id>/comments/', ReadCommentForArticleAPI.as_view()),
     path('comment-for-article/', CreateCommentForArticleAPI.as_view()),
