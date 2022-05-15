@@ -1,4 +1,5 @@
 import requests
+import json
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from django.test import TestCase, Client
@@ -7,9 +8,6 @@ from ..models import Article, Comment
 from ..views import ArticleReadCreateAPI
 from ..serializers import ArticleSerializer, CommentSerializer, ReplyToCommentSerializer
 from test_strategia.urls import URL, API_URL
-
-
-client = Client()
 
 
 class TestArticleReadCreateAPI(APITestCase):
@@ -41,24 +39,37 @@ class TestArticleReadCreateAPI(APITestCase):
         """Проверка создания статьи"""
         data = {'name': 'test_1', 'description': 'description', }
         response = self.client.post(reverse('article-list'), data=data, format='json')
-        article = Article.objects.get(name=data['name'])
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Статус ответа не 201')
-        self.assertEqual(article.name, data['name'], 'Данные при создании объекта не совпадают')
-        self.assertEqual(response.headers['Content-type'], 'application/json', 'Формат ответа не json')
+        article = Article.objects.get(id=response.data['id'])
+        serializer = ArticleSerializer(article, many=False)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'Статус ответа при создании статьи не 201')
+        self.assertEqual(serializer.data, dict(response.data), 'Создание статьи в БД не удалось')
+        self.assertEqual(response.headers['Content-type'],
+                         'application/json',
+                         'Форма данных в ответе при создании статьи не соответствует')
 
 
 class TestPytestArticleReadCreateAPI(TestCase):
     """Тестирование views статей pytest, динамические тесты"""
     url = f'{URL}{API_URL}article/'
 
-    def test_check_status_code_200_for_get_article_list(self):
+    def test_get_article_list(self):
         """Проверка подключения к API для получения списка всех статей"""
         response = requests.get(self.url)
-        print(response.content)
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
-        # assert response.content
+
+    def test_post_article_list(self):
+        """Проверка создания статьи"""
+        data = {'name': 'test_1', 'description': 'description'}
+        response = requests.post(self.url, data=data)
+        json_data = json.loads(response.content)
+
+        assert response.status_code == 201
+        assert response.headers['Content-Type'] == 'application/json'
+        assert [json_data['name'], json_data['description']] == [data['name'], data['description']]
+
 
 
 
