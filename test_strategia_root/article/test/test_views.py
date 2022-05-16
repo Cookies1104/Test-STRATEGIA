@@ -1,6 +1,6 @@
 import requests
-import time
 import json
+import pytest
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from django.test import TestCase, Client
@@ -90,44 +90,39 @@ class TestPytestArticleReadCreateAPI(TestCase):
 
     def _request_post(self):
         data = {'name': 'test_1', 'description': 'description'}
-        response = requests.post(self.url, data=data)
-        return json.loads(response.content)
+        return requests.post(self.url, data=data)
+
+    def _request_delete(self, article_id):
+        url = self.url + '/' + str(article_id) + '/'
+        return requests.delete(url)
 
     def test_get_article_list(self):
         """Проверка подключения к API для получения списка всех статей"""
         response = requests.get(self.url)
         assert response.status_code == 200
         assert response.headers['Content-Type'] == 'application/json'
+        assert 'results' in response.json()
 
     def test_post_article_list(self):
         """Проверка создания статьи"""
-        data = {'name': 'test_1', 'description': 'description'}
-        response = requests.post(self.url, data=data)
-        json_data = json.loads(response.content)
-        # article = Article.objects.get(id=json_data['id'])
+        response = self._request_post()
+        article_id = response.json()['id']
 
         assert response.status_code == 201
         assert response.headers['Content-Type'] == 'application/json'
-        assert [json_data['name'], json_data['description']] == [data['name'], data['description']]
+
+        delete_article = self._request_delete(article_id)
+
 
     # def test_put_article_list(self):
     #     """Проверка обновления статьи"""
-    #     data = {'name': 'update_test', 'description': 'update description'}
-    #     url = self.url + '/' + str(self.id) + '/'
-    #     print(self.id)
+    #     response = self._request_post()
+    #     article_id = response.json()['id']
     #
-    #     response = requests.put(url, data=data)
-    #     # json_data = json.loads(response.content)
-    #     print(response)
+    #     response_put = requests.put()
     #
-    #     print(response.status_code)
-    #     print()
     #     assert response.headers['Content-Type'] == 'application/json'
 
-
-class TestReadCommentAPI:
-    """Тестирование views ReadCommentAPI чтения комментариев"""
-    pass
 
 
 
