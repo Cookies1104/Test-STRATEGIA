@@ -16,6 +16,13 @@ class ArticleReadCreateAPI(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny, )
 
 
+class ArticleDestroyUpdateDeleteAPI(generics.RetrieveUpdateDestroyAPIView):
+    """Обновление и удаление конкретной статьи"""
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = (permissions.AllowAny, )
+
+
 class ReadCommentAPI(generics.ListAPIView):
     """Отображение всех комментариев"""
     queryset = Comment.objects.all()

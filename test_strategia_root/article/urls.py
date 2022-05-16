@@ -6,10 +6,12 @@ from article.views import (ArticleReadCreateAPI,
                            CreateCommentForArticleAPI,
                            CreateReplyToCommentAPI,
                            ReadCommentLevelThreeAPI,
+                           ArticleDestroyUpdateDeleteAPI,
                            )
 
 urlpatterns = [
     path('article/', ArticleReadCreateAPI.as_view(), name='article-list', ),
+    path('article/<int:pk>/', ArticleDestroyUpdateDeleteAPI.as_view(), name='article-one', ),
     path('comments/', ReadCommentAPI.as_view(), name='comment-list', ),
     path('article/<int:article_id>/comments/', ReadCommentForArticleAPI.as_view(), name='read-one-comment', ),
     path('comment-for-article/', CreateCommentForArticleAPI.as_view(), name='create-one-comment', ),
