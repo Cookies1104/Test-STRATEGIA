@@ -84,7 +84,7 @@ class TestArticleReadCreateAPI(APITestCase):
                          'При удалении статьи ответа срвера не 204')
 
 
-class TestPytestArticleReadCreateAPI(TestCase):
+class TestPytestArticleReadCreateAPI:
     """Тестирование views статей pytest, динамические тесты"""
     url = f'{BASE_URL}{API_URL}article/'
 
@@ -113,7 +113,6 @@ class TestPytestArticleReadCreateAPI(TestCase):
 
         delete_article = self._request_delete(article_id)
 
-
     # def test_put_article_list(self):
     #     """Проверка обновления статьи"""
     #     response = self._request_post()
@@ -124,12 +123,23 @@ class TestPytestArticleReadCreateAPI(TestCase):
     #     assert response.headers['Content-Type'] == 'application/json'
 
 
+class TestPytestCommentAPI(APITestCase):
+    """Тестирование API"""
+    url = f'{BASE_URL}{API_URL}/'
 
+    def _create_article(self):
+        """Создаёт статью"""
+        article = Article(name='test article for comment', description='test description')
+        # article.save()
+        # art = Article.objects.get(name='test article for comment')
+        return article
 
-
-
-
-
+    def test_read_comment_dor_article(self):
+        """"""
+        article = self._create_article()
+        print('article = ', article)
+        print('id = ', article.id)
+        # response = requests.get()
 
 
 

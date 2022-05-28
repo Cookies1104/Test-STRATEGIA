@@ -10,17 +10,15 @@ from .service import checking_primary_key
 
 # Create your views here.
 class ArticleReadCreateAPI(generics.ListCreateAPIView):
-    """Отображение существующих статей, а также создание новых"""
+    """Отображение списка статей, а также создание новых"""
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (permissions.AllowAny, )
 
 
 class ArticleDestroyUpdateDeleteAPI(generics.RetrieveUpdateDestroyAPIView):
     """Обновление и удаление конкретной статьи"""
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (permissions.AllowAny, )
 
 
 class ReadCommentAPI(generics.ListAPIView):
@@ -30,8 +28,16 @@ class ReadCommentAPI(generics.ListAPIView):
     permission_classes = (permissions.AllowAny, )
 
 
+class CommentDestroyUpdateDeleteAPI(generics.RetrieveUpdateDestroyAPIView):
+    """Отображение, обновление и удаление конкретного комментария"""
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
 class ReadCommentForArticleAPI(APIView):
-    """Отображение комментариев до 3 уровня к конкретной статье"""
+    """Отображение комментариев до 3 уровня к конкретной статье в виде дерева"""
+    permission_classes = (permissions.AllowAny, )
+
     @extend_schema(
         request=CommentSerializer,
         responses=CommentSerializer(many=True, ),
@@ -40,7 +46,8 @@ class ReadCommentForArticleAPI(APIView):
         pk = kwargs.get('article_id')
         check = checking_primary_key(model=Article, pk=pk)
         if check is None:
-            comment_list = Comment.objects.filter(article=pk, level=3 and 2 and 1)
+            comment_list = Comment.objects.filter(article=pk, level=1)
+            print(comment_list)
             return Response({'comments': CommentSerializer(comment_list, many=True).data})
         else:
             return check
