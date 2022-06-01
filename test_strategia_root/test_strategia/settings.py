@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from os import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = environ.get('SECRET_KEY')
+SECRET_KEY = 'django-insecure-4=v(+&z9eg+c$rv*8ov_f^7nt&m*g2**romdg*^-2pst-4l5$d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(environ.get('DEBUG', default=0))
+DEBUG = True
 
-ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -38,10 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
-    'article.apps.ArticleConfig',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+
+    'article.apps.ArticleConfig',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -79,13 +82,9 @@ WSGI_APPLICATION = 'test_strategia.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
-        "USER": environ.get("SQL_USER", "user"),
-        "PASSWORD": environ.get("SQL_PASSWORD", "password"),
-        "HOST": environ.get("SQL_HOST", "localhost"),
-        "PORT": environ.get("SQL_PORT", "5432"),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -134,8 +133,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     # пагинация для api с указанием количество элементов на 1 странице
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny', ),
     'PAGE_SIZE': 5,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -147,3 +148,5 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
 }
+
+AUTH_USER_MODEL = 'users.User'
